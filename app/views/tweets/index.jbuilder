@@ -8,5 +8,6 @@ json.tweets do
       json.image url_for(tweet.image)
     else
       json.image nil
+    end
   end
 end
