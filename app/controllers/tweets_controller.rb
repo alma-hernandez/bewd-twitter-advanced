@@ -11,6 +11,11 @@ class TweetsController < ApplicationController
     @tweet = user.tweets.new(tweet_params)
 
     render 'tweets/create' if @tweet.save
+
+      if @tweet.save
+        TweetMailer.notify(@tweet).deliver!
+        render 'tweets/create'
+      end
   end
 
   def destroy
