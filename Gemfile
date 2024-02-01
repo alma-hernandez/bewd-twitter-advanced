@@ -28,7 +28,7 @@ gem 'jbuilder', '~> 2.11'
 gem 'bcrypt', '~> 3.1'
 
 # AWS S3
-gem 'aws-sdk-s3', '~> 1.114'
+gem 'aws-sdk-s3', '~> 1.126'
 # Webrick
 gem 'webrick', '~> 1.7'
 # Mail gem
