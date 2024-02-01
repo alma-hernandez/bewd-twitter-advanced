@@ -12,9 +12,9 @@ class TweetsController < ApplicationController
 
     render 'tweets/create' if @tweet.save
 
-      if @tweet.save
-        TweetMailer.notify(@tweet).deliver!
-        render 'tweets/create'
+      iff @tweet.save
+      TweetMailer.notify(@tweet).deliver! # invoke TweetMailer to send out the email when a tweet is successfully posted
+      render 'tweets/create'
       end
   end
 
