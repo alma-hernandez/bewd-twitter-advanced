@@ -7,9 +7,8 @@ RSpec.describe TweetsController, type: :controller do
   it 'OK rate limit: 30 tweets per hour' do
     user = FactoryBot.create(:user) # create a user
     session = user.sessions.create # create a session for the user
-    @request.cookie_jar.signed['twitter_session_token'] = session.token # set the session token in the cookie, so that the user is logged in "in the front-end"
-    
-    # create 30 tweets for the user now, so that the next tweet should fail to be created
+    @request.cookie_jar.signed['twitter_session_token'] = session.token 
+
     30.times do |i|
       FactoryBot.create(:tweet, user: user)
   end
@@ -23,11 +22,9 @@ RSpec.describe TweetsController, type: :controller do
         message: 'Test Message'
       }
     }
-    
-    # check that the user has 30 tweets, again
+  
     expect(user.tweets.count).to eq(30)
   end
-end
 
     it 'OK with image attachments' do
       user = FactoryBot.create(:user)
