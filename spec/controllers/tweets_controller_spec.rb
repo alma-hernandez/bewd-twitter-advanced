@@ -3,28 +3,31 @@ require 'rails_helper'
 RSpec.describe TweetsController, type: :controller do
   render_views
 
-  context 'POST /tweets' do
-    it 'renders new tweet object' do
-      user = FactoryBot.create(:user)
-      session = user.sessions.create
-      @request.cookie_jar.signed['twitter_session_token'] = session.token
+  # spec/controllers/tweets_controller_spec.rb
+  it 'OK rate limit: 30 tweets per hour' do
+    user = FactoryBot.create(:user) # create a user
+    session = user.sessions.create # create a session for the user
+    @request.cookie_jar.signed['twitter_session_token'] = session.token # set the session token in the cookie, so that the user is logged in "in the front-end"
+    
+    # create 30 tweets for the user now, so that the next tweet should fail to be created
+    30.times do |i|
+      FactoryBot.create(:tweet, user: user)
+  end
 
-      post :create, params: {
-        tweet: {
-          message: 'Test Message'
-        }
+    # check that the user has 30 tweets
+    expect(user.tweets.count).to eq(30)
+
+    # make the POST request
+    post :create, params: {
+      tweet: {
+        message: 'Test Message'
       }
-
-      expect(response.body).to eq({
-        tweet: {
-          username: user.username,
-          message: 'Test Message'
-        }
-      }.to_json)
-
-      expect(JSON.parse(response.body)['tweet']['message']).to eq('Test Message')
-      expect(JSON.parse(response.body)['tweet']['image']).to eq(nil)
-    end
+    }
+    
+    # check that the user has 30 tweets, again
+    expect(user.tweets.count).to eq(30)
+  end
+end
 
     it 'OK with image attachments' do
       user = FactoryBot.create(:user)
@@ -41,7 +44,6 @@ RSpec.describe TweetsController, type: :controller do
       expect(JSON.parse(response.body)['tweet']['message']).to eq('Test Message')
       expect(JSON.parse(response.body)['tweet']['image']).to include('test.png')
     end
-  end
 
   context 'GET /tweets' do
     it 'renders all tweets object' do

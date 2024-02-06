@@ -9,12 +9,20 @@ class TweetsController < ApplicationController
     session = Session.find_by(token: token)
     user = session.user
     @tweet = user.tweets.new(tweet_params)
-  
+    
+    if user.tweets.where('created_at > ?', Time.now - 60.minutes).count < 30
+      @tweet = user.tweets.new(tweet_params)
+    end
+
     if @tweet.save
       TweetMailer.notify(@tweet).deliver!
-      render 'tweets/create'
+      render 'tweets/create', status: 201
     else 
-      render 'tweets/create'
+      eturn render json: {
+        error: {
+          message: 'Rate limit exceeded (30 tweets/hour). Please try again later.'
+        }
+      }
     end
   end
 
